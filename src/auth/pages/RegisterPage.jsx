@@ -1,7 +1,10 @@
-import { Button, Grid, Link, TextField, Typography } from '@mui/material'
+import { Alert, Button, Grid, Link, TextField, Typography } from '@mui/material'
 import { Link as RouterLink } from 'react-router-dom'
 import { AuthLayout } from '../layout/AuthLayout'
+import { useMemo } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import { useForm } from 'react-hook-form'
+import { startRegisterUserWithEmailPassword } from '@/store/auth'
 
 const formData = {
   email: '',
@@ -10,6 +13,9 @@ const formData = {
 }
 
 export const RegisterPage = () => {
+  const dispatch = useDispatch()
+  const { status, errorMessage } = useSelector(state => state.auth)
+
   const {
     register,
     handleSubmit,
@@ -18,8 +24,10 @@ export const RegisterPage = () => {
     defaultValues: formData,
   })
 
+  const isAuthenticating = useMemo(() => status === 'checking', [status])
+
   const onSubmit = data => {
-    console.log(data)
+    dispatch(startRegisterUserWithEmailPassword(data))
   }
 
   return (
@@ -82,8 +90,13 @@ export const RegisterPage = () => {
           </Grid>
 
           <Grid container spacing={2} sx={{ mb: 2, mt: 1 }}>
+            {errorMessage && (
+              <Grid item xs={12}>
+                <Alert severity="error">{errorMessage}</Alert>
+              </Grid>
+            )}
             <Grid item xs={12}>
-              <Button type="submit" variant="contained" fullWidth>
+              <Button disabled={isAuthenticating} type="submit" variant="contained" fullWidth>
                 <Typography sx={{ ml: 1 }}>Register</Typography>
               </Button>
             </Grid>
