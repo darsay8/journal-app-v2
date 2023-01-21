@@ -2,24 +2,32 @@ import { useEffect, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Link as RouterLink } from 'react-router-dom'
 import { checkingAuth, startGoogleSignIn } from '@/store/auth/'
-import { useForm } from '@/hooks'
 import { Google } from '@mui/icons-material'
 import { Button, Grid, Link, TextField, Typography } from '@mui/material'
 import { AuthLayout } from '../layout/AuthLayout'
+import { useForm } from 'react-hook-form'
+
+const formData = {
+  email: '',
+  password: '',
+}
 
 export const LoginPage = () => {
   const { status } = useSelector(state => state.auth)
   const dispatch = useDispatch()
 
-  const { email, password, onInputChange } = useForm({
-    email: 'user@mail.com',
-    password: '123456',
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    defaultValues: formData,
   })
 
   const isAuthenticating = useMemo(() => status === 'checking', [status])
 
-  const onSubmit = e => {
-    e.preventDefault()
+  const onSubmit = data => {
+    console.log(data)
     // console.log('login')
     dispatch(checkingAuth())
   }
@@ -32,7 +40,7 @@ export const LoginPage = () => {
 
   return (
     <AuthLayout title="Login">
-      <form onSubmit={onSubmit}>
+      <form onSubmit={handleSubmit(onSubmit)}>
         <Grid container>
           <Grid item xs={12} sx={{ mt: 2 }}>
             <TextField
@@ -40,9 +48,16 @@ export const LoginPage = () => {
               type="email"
               placeholder="name@mail.com"
               fullWidth
-              name="email"
-              value={email}
-              onChange={onInputChange}
+              {...register('email', {
+                required: 'Email is required.',
+                pattern: {
+                  value:
+                    /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+                  message: 'Must be a valid email address.',
+                },
+              })}
+              error={!!errors.email}
+              helperText={errors.email?.message}
             ></TextField>
           </Grid>
           <Grid item xs={12} sx={{ mt: 2 }}>
@@ -51,9 +66,15 @@ export const LoginPage = () => {
               type="password"
               placeholder="******"
               fullWidth
-              name="password"
-              value={password}
-              onChange={onInputChange}
+              {...register('password', {
+                required: 'Password is Required.',
+                pattern: {
+                  value: /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,10}$/,
+                  message: 'Password is not valid.',
+                },
+              })}
+              error={!!errors.password}
+              helperText={errors.password?.message}
             ></TextField>
           </Grid>
 

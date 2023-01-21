@@ -43,7 +43,7 @@ export const RegisterPage = () => {
           <Grid item xs={12} sx={{ mt: 2 }}>
             <TextField
               label="Email"
-              type="text"
+              type="email"
               placeholder="name@mail.com"
               fullWidth
               {...register('email', {
@@ -73,7 +73,11 @@ export const RegisterPage = () => {
                 },
               })}
               error={!!errors.password}
-              helperText={errors.password?.message}
+              helperText={
+                errors.password
+                  ? errors.password?.message
+                  : 'Password min length is 6 to 10 and should contain one Capital Letter, one Small Letter, and one Number.'
+              }
             ></TextField>
           </Grid>
 
