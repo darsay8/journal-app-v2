@@ -1,25 +1,30 @@
 import { Button, Grid, Link, TextField, Typography } from '@mui/material'
 import { Link as RouterLink } from 'react-router-dom'
 import { AuthLayout } from '../layout/AuthLayout'
-import { useForm } from '@/hooks'
+import { useForm } from 'react-hook-form'
 
 const formData = {
-  email: 'user@mail.com',
-  password: '123456',
-  displayName: 'User',
+  email: '',
+  password: '',
+  displayName: '',
 }
 
 export const RegisterPage = () => {
-  const { displayName, email, password, onInputChange, formState } = useForm(formData)
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    defaultValues: formData,
+  })
 
-  const onSubmit = e => {
-    e.preventDefault()
-    console.log(formState)
+  const onSubmit = data => {
+    console.log(data)
   }
 
   return (
     <AuthLayout title="Register">
-      <form onSubmit={onSubmit}>
+      <form onSubmit={handleSubmit(onSubmit)}>
         <Grid container>
           <Grid item xs={12} sx={{ mt: 2 }}>
             <TextField
@@ -27,20 +32,30 @@ export const RegisterPage = () => {
               type="text"
               placeholder="name"
               fullWidth
-              name="displayName"
-              value={displayName}
-              onChange={onInputChange}
+              {...register('displayName', {
+                required: 'Name is Required.',
+                minLength: { value: 3, message: 'Name min length is 3.' },
+              })}
+              error={!!errors.displayName}
+              helperText={errors.displayName?.message}
             ></TextField>
           </Grid>
           <Grid item xs={12} sx={{ mt: 2 }}>
             <TextField
-              label="Mail"
-              type="email"
+              label="Email"
+              type="text"
               placeholder="name@mail.com"
               fullWidth
-              name="email"
-              value={email}
-              onChange={onInputChange}
+              {...register('email', {
+                required: 'Email is required.',
+                pattern: {
+                  value:
+                    /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+                  message: 'Must be a valid email address.',
+                },
+              })}
+              error={!!errors.email}
+              helperText={errors.email?.message}
             ></TextField>
           </Grid>
           <Grid item xs={12} sx={{ mt: 2 }}>
@@ -49,9 +64,16 @@ export const RegisterPage = () => {
               type="password"
               placeholder="******"
               fullWidth
-              name="password"
-              value={password}
-              onChange={onInputChange}
+              {...register('password', {
+                required: 'Password is Required.',
+                pattern: {
+                  value: /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,10}$/,
+                  message:
+                    'Password min length is 6 to 10 and should contain one Capital Letter, one Small Letter, and one Number.',
+                },
+              })}
+              error={!!errors.password}
+              helperText={errors.password?.message}
             ></TextField>
           </Grid>
 
