@@ -2,7 +2,7 @@ import { createSlice } from '@reduxjs/toolkit'
 export const journalSlice = createSlice({
   name: 'journal',
   initialState: {
-    isSaving: true,
+    isSaving: false,
     messageSave: '',
     notes: [],
     active: null,
@@ -15,13 +15,28 @@ export const journalSlice = createSlice({
     // }
   },
   reducers: {
-    addNewEmptyNote: (state, action) => {},
-    setActiveNote: (state, action) => {},
+    savingNewNote: state => {
+      state.isSaving = true
+    },
+    addNewEmptyNote: (state, action) => {
+      state.notes.push(action.payload)
+      state.isSaving = false
+    },
+    setActiveNote: (state, action) => {
+      state.active = action.payload
+    },
     setNotes: (state, active) => {},
     setSaving: state => {},
     updateNote: (state, action) => {},
     deleteNoteById: (state, action) => {},
   },
 })
-export const { addNewEmptyNote, setActiveNote, setNotes, setSaving, updateNote, deleteNoteById } =
-  journalSlice.actions
+export const {
+  savingNewNote,
+  addNewEmptyNote,
+  setActiveNote,
+  setNotes,
+  setSaving,
+  updateNote,
+  deleteNoteById,
+} = journalSlice.actions
