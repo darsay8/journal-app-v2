@@ -1,11 +1,18 @@
 import { FirebaseDB } from '@/firebase/config'
 import { addDoc, collection, doc, setDoc } from 'firebase/firestore/lite'
-import { addNewEmptyNote, savingNewNote, setActiveNote, setNotes } from './journalSlice'
+import {
+  addNewEmptyNote,
+  savingNewNote,
+  setActiveNote,
+  setNotes,
+  setSaving,
+  updatedNote,
+} from './journalSlice'
 import { loadNotes } from '@/helpers'
 
 export const startNewNote = () => async (dispatch, getState) => {
   dispatch(savingNewNote())
-  //uid
+
   const { uid } = getState().auth
 
   const newNote = {
@@ -14,8 +21,6 @@ export const startNewNote = () => async (dispatch, getState) => {
     date: new Date().getTime(),
   }
 
-  // collRef = collection(FirebaseDB, `${uid}/journal/notes`)
-  // await setDoc(doc(collRef), newNote)
   const newDoc = doc(collection(FirebaseDB, `${uid}/journal/notes`))
   await setDoc(newDoc, newNote)
 
@@ -29,4 +34,18 @@ export const startLoadingNotes = () => async (dispatch, getState) => {
   if (!uid) throw new Error('User UID does not exist')
   const notes = await loadNotes(uid)
   dispatch(setNotes(notes))
+}
+
+export const startSaveNote = activeNote => async (dispatch, getState) => {
+  dispatch(setSaving())
+
+  const { uid } = getState().auth
+
+  const noteToFirestore = { ...activeNote }
+  delete noteToFirestore.id
+
+  const docRef = doc(FirebaseDB, `${uid}/journal/notes/${activeNote.id}`)
+  await setDoc(docRef, noteToFirestore, { merge: true })
+
+  dispatch(updatedNote(activeNote))
 }

@@ -1,3 +1,4 @@
+import { FlashOnRounded } from '@mui/icons-material'
 import { createSlice } from '@reduxjs/toolkit'
 export const journalSlice = createSlice({
   name: 'journal',
@@ -24,12 +25,25 @@ export const journalSlice = createSlice({
     },
     setActiveNote: (state, action) => {
       state.active = action.payload
+      state.messageSaved = ''
     },
     setNotes: (state, action) => {
       state.notes = action.payload
     },
-    setSaving: state => {},
-    updateNote: (state, action) => {},
+    setSaving: state => {
+      state.isSaving = true
+      state.messageSaved = ''
+    },
+    updatedNote: (state, action) => {
+      state.isSaving = false
+      state.notes = state.notes.map(note => {
+        if (note.id === action.payload.id) {
+          return action.payload
+        }
+        return note
+      })
+      state.messageSaved = `${action.payload.title}, Updated Succesfully ✨`
+    },
     deleteNoteById: (state, action) => {},
   },
 })
@@ -39,6 +53,6 @@ export const {
   setActiveNote,
   setNotes,
   setSaving,
-  updateNote,
+  updatedNote,
   deleteNoteById,
 } = journalSlice.actions
