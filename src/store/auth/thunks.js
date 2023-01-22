@@ -1,4 +1,5 @@
 import {
+  logoutFirebase,
   registerUserWithEmailPassword,
   signInWithEmailPassword,
   singIngWithGoogle,
@@ -48,3 +49,8 @@ export const startSignInWithEmailPassword =
 
     dispatch(login({ uid, displayName, email, photoURL }))
   }
+
+export const startLogout = () => async dispatch => {
+  await logoutFirebase()
+  dispatch(logout())
+}
