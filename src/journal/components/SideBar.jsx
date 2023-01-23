@@ -8,8 +8,6 @@ export const SideBar = ({ drawerWidth }) => {
   const { displayName } = useSelector(state => state.auth)
   const { notes } = useSelector(state => state.journal)
 
-  const userName = `${displayName.charAt(0).toUpperCase()}${displayName.slice(1)}`
-
   const months = ['January', 'February', 'March', 'April', 'May']
 
   return (
@@ -24,7 +22,9 @@ export const SideBar = ({ drawerWidth }) => {
       >
         <Toolbar>
           <Typography variant="h6" noWrap component="div">
-            {userName}
+            {!!displayName
+              ? `${displayName.charAt(0).toUpperCase()}${displayName.slice(1)}`
+              : displayName}
           </Typography>
         </Toolbar>
         <Divider />

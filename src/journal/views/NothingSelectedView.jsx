@@ -1,7 +1,10 @@
+import { useSelector } from 'react-redux'
 import { StarOutline } from '@mui/icons-material'
 import { Grid, Typography } from '@mui/material'
 
 export const NothingSelectedView = () => {
+  const { notes } = useSelector(state => state.journal)
+
   return (
     <Grid
       className="animate__animated animate__fadeIn animate__faster"
@@ -17,7 +20,7 @@ export const NothingSelectedView = () => {
       </Grid>
       <Grid item xs={12}>
         <Typography color="white" variant="h5">
-          Select an entry
+          {notes.length > 0 ? 'Select an Entry' : 'Create a Note'}
         </Typography>
       </Grid>
     </Grid>
